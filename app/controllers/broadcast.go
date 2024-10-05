@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"log"
 
 	"github.com/darcoprogramador/go-chat/app/models"
@@ -12,6 +13,7 @@ type MessageHub interface {
 	Register(*websocket.Conn)
 	Unregister(*websocket.Conn)
 	Broadcast(string)
+	SendMessage(*websocket.Conn, string)
 }
 
 type Hub struct {
@@ -31,10 +33,12 @@ func NewHub() MessageHub {
 }
 
 func (h *Hub) RunHub() {
+	count := 1
 	for {
 		select {
 		case connection := <-h.register:
-			h.clients[connection] = &models.Client{}
+			h.clients[connection] = &models.Client{Number: count}
+			count++
 			log.Println("connection registered")
 
 		case message := <-h.broadcast:
@@ -78,4 +82,17 @@ func (h *Hub) Unregister(connection *websocket.Conn) {
 
 func (h *Hub) Broadcast(message string) {
 	h.broadcast <- message
+}
+
+func (h *Hub) SendMessage(connection *websocket.Conn, message string) {
+	user := h.clients[connection].Number
+
+	jsonMessage, err := json.Marshal(models.Message{User: user, Message: message})
+
+	if err != nil {
+		log.Println("error marshalling message:", err)
+		return
+	}
+
+	h.Broadcast(string(jsonMessage))
 }

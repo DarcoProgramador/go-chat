@@ -42,7 +42,20 @@
             var messages = evt.data.split("\n");
             for (var i = 0; i < messages.length; i++) {
               var item = document.createElement("div");
-              item.innerText = messages[i];
+              var jsonObj = JSON.parse(messages[i]);
+
+              var userHeader = document.createElement("div");
+              var userText = document.createElement("p");
+              userHeader.innerText = "Anon" + jsonObj.user;
+              userText.innerText = jsonObj.message;
+
+              userHeader.className = "user-header";
+              userText.className = "user-text";
+
+              item.className = "chat-item";
+
+              item.appendChild(userHeader);
+              item.appendChild(userText);
               appendLog(item);
             }
           };
@@ -59,12 +72,8 @@
       }
 
       body {
-        overflow: hidden;
-        padding: 0;
         margin: 0;
-        width: 100%;
-        height: 100%;
-        background: gray;
+        padding: 0;
       }
 
       #log {
@@ -79,14 +88,55 @@
         overflow: auto;
       }
 
-      #form {
+      .container-message {
         padding: 0 0.5em 0 0.5em;
         margin: 0;
         position: absolute;
         bottom: 1em;
         left: 0px;
         width: 100%;
+        text-align: center;
         overflow: hidden;
+      }
+
+      #form {
+        display: flex;
+        justify-content: center;
+        margin-left: auto;
+        margin-right: auto;
+        height: 2em;
+        background-color: #eee;
+        border-radius: 2em;
+        width: 50%;
+      }
+
+      #msg {
+        border: none;
+      }
+
+      .user-header {
+        font-weight: bold;
+        color: white;
+      }
+
+      .user-text {
+        color: white;
+      }
+
+      .chat-item {
+        margin: 0.5em 0;
+        background: rgb(112, 102, 230);
+        background: radial-gradient(
+          circle,
+          rgba(112, 102, 230, 1) 0%,
+          rgba(25, 139, 230, 1) 100%
+        );
+        border-radius: 2em;
+        padding: 1rem;
+        width: 20em;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        margin-left: 1rem;
       }
     </style>
   </head>

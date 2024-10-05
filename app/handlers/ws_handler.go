@@ -27,7 +27,7 @@ func WsClientHandler(hub controllers.MessageHub) func(c *websocket.Conn) {
 
 			if messageType == websocket.TextMessage {
 				// Broadcast the received message
-				hub.Broadcast(string(message))
+				hub.SendMessage(c, string(message))
 			} else {
 				log.Println("websocket message received of type", messageType)
 			}
